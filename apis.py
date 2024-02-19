@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
 username = os.environ['username']
 apiKey = os.environ['apiKey']
 hostURL = os.environ['hostURL']
@@ -140,5 +141,35 @@ def updateExternalXrayTests(externalIssueID, objectID, projectID):
     }
 
     response = requests.post(f"{hostURL}/api/v1/external-issue?projectId=" + f"{projectID}", headers=headers, auth=HTTPBasicAuth(username, apiKey), json=data).json()
+
+    return response
+
+def deleteExternalRequirements(externalIssueID, objectID, projectID):
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    data = {
+        "issueId": f"{externalIssueID}",
+        "objectType": "TEST_CASE",
+        "objectId": f"{objectID}"
+    }
+
+    response = requests.delete(f"{hostURL}/api/v1/external-issue?projectId=" + f"{projectID}", headers=headers, auth=HTTPBasicAuth(username, apiKey), json=data).json()
+
+    return response
+
+def deleteExternalXrayTests(externalIssueID, objectID, projectID):
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    data = {
+        "issueId": f"{externalIssueID}",
+        "objectType": "XRAY_TEST_CASE",
+        "objectId": f"{objectID}"
+    }
+
+    response = requests.delete(f"{hostURL}/api/v1/external-issue?projectId=" + f"{projectID}", headers=headers, auth=HTTPBasicAuth(username, apiKey), json=data).json()
 
     return response

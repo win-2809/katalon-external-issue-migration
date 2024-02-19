@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-username = os.environ['username']
+
 projectID = os.environ['projectID']
 sourcePath = os.environ['sourcePath']
 destinationPath = os.environ['destinationPath']
@@ -32,7 +32,8 @@ def updateExternalIssues():
             if sourceTestCase.get('name') == destinationTestCase.get('name'):
                 destinationTestCase.get('externalRequirementIssueID').extend(item for item in sourceTestCase.get('externalRequirementIssueID') if item not in destinationTestCase.get('externalRequirementIssueID'))
                 destinationTestCase.get('externalXrayTestIssueID').extend(item for item in sourceTestCase.get('externalXrayTestIssueID') if item not in destinationTestCase.get('externalXrayTestIssueID'))
-                
+                destinationTestCase.update({"sourceTestCaseID": sourceTestCase.get('id')})
+
     print("Updated Test Cases: ")
     print(destinationTestCases)
     
@@ -41,13 +42,16 @@ def updateExternalIssues():
             apis.updateExternalRequirements(issue, destinationTestCase.get('id'), projectID)
             
         for issue in destinationTestCase.get('externalXrayTestIssueID'):
+            # Unlink Xray Test from source Test Cases
+            apis.deleteExternalXrayTests(issue, destinationTestCase.get('sourceTestCaseID'), projectID)
+
+            # Link Xray Test to destination Test Cases
             apis.updateExternalXrayTests(issue, destinationTestCase.get('id'), projectID)
     
     print("Process finished!")
     
     return {
-        "status": "200",
-        "message": "Success"
+        "status": "Process finished!"
     }
     
 def main():
