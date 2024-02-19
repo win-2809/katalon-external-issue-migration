@@ -5,7 +5,10 @@ This Python script offers the ability to migrate external issues, such as requir
 
 Technically, the script utilizes the public APIs of Katalon, which can retrieve test cases and external issues, then update the relationship between test cases and external issues as needed.
 
-*Please note that this app is written on Python 3.9 and does not store any provided data*
+**Note**
+- This app is written on Python 3.9.
+- Page size of `Get Test Case` endpoint is 300.
+- Provided data will not be stored.
 
 ### Usage
 1. Creating a .env file with the below params

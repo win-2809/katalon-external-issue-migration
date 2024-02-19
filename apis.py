@@ -26,7 +26,7 @@ def getTestCasesByPath(projectID, path):
             # Get test object by path (required)
             {
                 "key": "path",
-                "operator": "=",
+                "operator": "starts with",
                 "value": f"{path}"
             }
         ],
