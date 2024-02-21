@@ -8,17 +8,17 @@ load_dotenv()
 projectID = os.environ['projectID']
 sourcePath = os.environ['sourcePath']
 destinationPath = os.environ['destinationPath']
-sourceRepoName = os.environ['sourceRepoName']
-destinationRepoName = os.environ['destinationRepoName']
+sourceRepoID = os.environ['sourceRepoID']
+destinationRepoID = os.environ['destinationRepoID']
 
 def getSourceTestCases():
-    testCases = utils.filterTestCasesByRepo(projectID, sourcePath, sourceRepoName)
+    testCases = utils.filterTestCasesByRepo(projectID, sourcePath, sourceRepoID)
     print("Source Test Cases: ")
     print(testCases)
     return testCases
 
 def getDestinationTestCases():
-    testCases = utils.filterTestCasesByRepo(projectID, destinationPath, destinationRepoName)
+    testCases = utils.filterTestCasesByRepo(projectID, destinationPath, destinationRepoID)
     print("Destination Test Cases: ")
     print(testCases)
     return testCases

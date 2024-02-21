@@ -19,8 +19,8 @@ Technically, the script utilizes the public APIs of Katalon, which can retrieve 
     - `projectID`: Your Katalon project ID
     - `sourcePath`: The directory of test cases in your legacy repository
     - `destinationPath`: The directory of test cases in your current repository
-    - `sourceRepoName`: Your legacy repository name
-    - `destinationRepoName`: Your current repository name
+    - `sourceRepoID`: Your legacy repository name (Leave this param blank if your source repository is Uploaded Data folder)
+    - `destinationRepoID`: Your current repository name (Leave this param blank if your destination repository is Uploaded Data folder)
 
 2. (Optional) Set up your vitural environment
     > python3 -m venv venv

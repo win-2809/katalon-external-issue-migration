@@ -1,13 +1,13 @@
 import apis
 
 
-def filterTestCasesByRepo(projectID, path, repoName):
+def filterTestCasesByRepo(projectID, path, repoID):
     data = apis.getTestCasesByPath(projectID, path).get('content')
 
     testCases = []
 
     for testCase in data:
-        if repoName != 'Uploaded Data' and testCase.get('testProject') is not None and testCase.get('testProject').get('name') == repoName:
+        if repoID != '' and testCase.get('testProject') is not None and testCase.get('testProject').get('id') == int(repoID):
             # Get external requirement IDs
             externalRequirementIssueIDs = []
             externalRequirements = apis.getExternalRequirements(projectID, testCase.get('id')).get('content')
@@ -28,10 +28,10 @@ def filterTestCasesByRepo(projectID, path, repoName):
                 "path": testCase.get('path'),
                 "externalRequirementIssueID": externalRequirementIssueIDs,
                 "externalXrayTestIssueID": externalXrayTestIssueIDs,
-                "repoName": repoName
+                "repoName": testCase.get('testProject').get('name')
             }
             testCases.append(testCaseDetails)
-        elif repoName == 'Uploaded Data' and testCase.get('testProject') is None:
+        elif repoID == '' and testCase.get('testProject') is None:
             # Get external requirement IDs
             externalRequirementIssueIDs = []
             externalRequirements = apis.getExternalRequirements(projectID, testCase.get('id')).get('content')
@@ -52,7 +52,7 @@ def filterTestCasesByRepo(projectID, path, repoName):
                 "path": testCase.get('path'),
                 "externalRequirementIssueID": externalRequirementIssueIDs,
                 "externalXrayTestIssueID": externalXrayTestIssueIDs,
-                "repoName": repoName
+                "repoName": 'Uploaded Data'
             }
             testCases.append(testCaseDetails)
         else:
