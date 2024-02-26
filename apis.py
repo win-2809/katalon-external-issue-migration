@@ -8,28 +8,51 @@ load_dotenv()
 username = os.environ['username']
 apiKey = os.environ['apiKey']
 hostURL = os.environ['hostURL']
+sourceRepoID = os.environ['sourceRepoID']
 
-def getTestCasesByPath(projectID, path):
+def searchRecursively(currentPageIndex, searchParams, items) :
     headers = {
         'Content-Type': 'application/json'
     }
+    searchParams["pagination"]["page"] = currentPageIndex
+    response = requests.post(f"{hostURL}/api/v1/search", headers=headers, auth=HTTPBasicAuth(username, apiKey), json=searchParams).json()
+    if (len(response["content"]) == 0) :
+        return items
+
+    items = items + response["content"]
+    return searchRecursively(currentPageIndex + 1, searchParams, items)
+
+def getTestCasesByPath(projectID, path, repoID):
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    print(hostURL, username, projectID, apiKey, repoID != '')
+
+    conditions = [
+        # Get test object by project ID (required)
+         {
+            "key": "Project.id",
+            "operator": "=",
+            "value": f"{projectID}"
+         },
+         # Get test object by path (required)
+         {
+            "key": "path",
+            "operator": "starts with",
+            "value": f"{path}"
+         }
+    ]
+
+    if (repoID != '') :
+        conditions.append({
+            "key": "TestProject.id",
+            "operator": "=",
+            "value": f"{repoID}"
+        })
     
     data = {
         "type": "TestCase",
-        "conditions": [
-            # Get test object by project ID (required)
-            {
-                "key": "Project.id",
-                "operator": "=",
-                "value": f"{projectID}"
-            },
-            # Get test object by path (required)
-            {
-                "key": "path",
-                "operator": "starts with",
-                "value": f"{path}"
-            }
-        ],
+        "conditions": conditions,
         "pagination": {
             "page": 0,
             "size": 300,
@@ -40,9 +63,7 @@ def getTestCasesByPath(projectID, path):
         }
     }
 
-    response = requests.post(f"{hostURL}/api/v1/search", headers=headers, auth=HTTPBasicAuth(username, apiKey), json=data).json()
-
-    return response
+    return searchRecursively(0, data, [])
 
 def getExternalRequirements(projectID, testCaseID):
     headers = {
@@ -75,9 +96,7 @@ def getExternalRequirements(projectID, testCaseID):
         }
     }
 
-    response = requests.post(f"{hostURL}/api/v1/search", headers=headers, auth=HTTPBasicAuth(username, apiKey), json=data).json()
-
-    return response
+    return searchRecursively(0, data, [])
 
 def getExternalXrayTests(projectID, testCaseID):
     headers = {
@@ -110,9 +129,7 @@ def getExternalXrayTests(projectID, testCaseID):
         }
     }
 
-    response = requests.post(f"{hostURL}/api/v1/search", headers=headers, auth=HTTPBasicAuth(username, apiKey), json=data).json()
-
-    return response
+    return searchRecursively(0, data, [])
 
 def updateExternalRequirements(externalIssueID, objectID, projectID):
     headers = {

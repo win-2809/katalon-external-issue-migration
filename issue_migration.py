@@ -23,16 +23,32 @@ def getDestinationTestCases():
     print(testCases)
     return testCases
 
+def replacePath(sourcePath, destinationPath, path):
+    index = path.find(sourcePath)
+
+    # Replace the first sourcePath
+    if index != -1:
+        return path[:index] + destinationPath + path[index + len(sourcePath):]
+    return None
+
+def findDestinationTestCase(sourceTestCase, destinationPath, sourcePath, testCases):
+    for testCase in testCases:
+        fullDestinationPath = replacePath(sourcePath, destinationPath, sourceTestCase["path"])
+        if testCase["name"] == sourceTestCase["name"] and testCase["path"] == fullDestinationPath:
+            return testCase
+    return None
+
 def updateExternalIssues():
     sourceTestCases = getSourceTestCases()
     destinationTestCases = getDestinationTestCases()
     
-    for destinationTestCase in destinationTestCases:
-        for sourceTestCase in sourceTestCases:
-            if sourceTestCase.get('name') == destinationTestCase.get('name'):
-                destinationTestCase.get('externalRequirementIssueID').extend(item for item in sourceTestCase.get('externalRequirementIssueID') if item not in destinationTestCase.get('externalRequirementIssueID'))
-                destinationTestCase.get('externalXrayTestIssueID').extend(item for item in sourceTestCase.get('externalXrayTestIssueID') if item not in destinationTestCase.get('externalXrayTestIssueID'))
-                destinationTestCase.update({"sourceTestCaseID": sourceTestCase.get('id')})
+    for sourceTestCase in sourceTestCases:
+        destinationTestCase = findDestinationTestCase(sourceTestCase, destinationPath, sourcePath, destinationTestCases)
+        print('destination test case', destinationTestCase)
+        if destinationTestCase is not None:
+            destinationTestCase.get('externalRequirementIssueID').extend(item for item in sourceTestCase.get('externalRequirementIssueID') if item not in destinationTestCase.get('externalRequirementIssueID'))
+            destinationTestCase.get('externalXrayTestIssueID').extend(item for item in sourceTestCase.get('externalXrayTestIssueID') if item not in destinationTestCase.get('externalXrayTestIssueID'))
+            destinationTestCase.update({"sourceTestCaseID": sourceTestCase.get('id')})
 
     print("Updated Test Cases: ")
     print(destinationTestCases)

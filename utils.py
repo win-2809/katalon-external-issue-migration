@@ -2,22 +2,22 @@ import apis
 
 
 def filterTestCasesByRepo(projectID, path, repoID):
-    data = apis.getTestCasesByPath(projectID, path).get('content')
+    data = apis.getTestCasesByPath(projectID, path, repoID)
 
     testCases = []
 
     for testCase in data:
-        if repoID != '' and testCase.get('testProject') is not None and testCase.get('testProject').get('id') == int(repoID):
+        if repoID != '' or (repoID == '' and testCase.get('testProject') is None) :
             # Get external requirement IDs
             externalRequirementIssueIDs = []
-            externalRequirements = apis.getExternalRequirements(projectID, testCase.get('id')).get('content')
+            externalRequirements = apis.getExternalRequirements(projectID, testCase.get('id'))
             for issue in externalRequirements:
                 externalRequirementIssueID = issue.get('issueId')
                 externalRequirementIssueIDs.append(externalRequirementIssueID)
             
             # Get external Xray test IDs
             externalXrayTestIssueIDs = []
-            externalXrayTests = apis.getExternalXrayTests(projectID, testCase.get('id')).get('content')
+            externalXrayTests = apis.getExternalXrayTests(projectID, testCase.get('id'))
             for issue in externalXrayTests:
                 externalXrayTestIssueID = issue.get('issueId')
                 externalXrayTestIssueIDs.append(externalXrayTestIssueID)
@@ -27,36 +27,11 @@ def filterTestCasesByRepo(projectID, path, repoID):
                 "name": testCase.get('name'),
                 "path": testCase.get('path'),
                 "externalRequirementIssueID": externalRequirementIssueIDs,
-                "externalXrayTestIssueID": externalXrayTestIssueIDs,
-                "repoName": testCase.get('testProject').get('name')
-            }
-            testCases.append(testCaseDetails)
-        elif repoID == '' and testCase.get('testProject') is None:
-            # Get external requirement IDs
-            externalRequirementIssueIDs = []
-            externalRequirements = apis.getExternalRequirements(projectID, testCase.get('id')).get('content')
-            for issue in externalRequirements:
-                externalRequirementIssueID = issue.get('issueId')
-                externalRequirementIssueIDs.append(externalRequirementIssueID)
-            
-            # Get external Xray test IDs
-            externalXrayTestIssueIDs = []
-            externalXrayTests = apis.getExternalXrayTests(projectID, testCase.get('id')).get('content')
-            for issue in externalXrayTests:
-                externalXrayTestIssueID = issue.get('issueId')
-                externalXrayTestIssueIDs.append(externalXrayTestIssueID)
-
-            testCaseDetails = {
-                "id": testCase.get('id'),
-                "name": testCase.get('name'),
-                "path": testCase.get('path'),
-                "externalRequirementIssueID": externalRequirementIssueIDs,
-                "externalXrayTestIssueID": externalXrayTestIssueIDs,
-                "repoName": 'Uploaded Data'
+                "externalXrayTestIssueID": externalXrayTestIssueIDs
             }
             testCases.append(testCaseDetails)
         else:
-            print("Given path doesn't match")
+            print("Given path doesn't match", repoID == '', testCase.get('testProject'), testCase.get('testProject') is None)
             continue
 
     return testCases
