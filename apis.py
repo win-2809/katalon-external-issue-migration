@@ -10,6 +10,7 @@ apiKey = os.environ['apiKey']
 hostURL = os.environ['hostURL']
 sourceRepoID = os.environ['sourceRepoID']
 
+# Search API just support max pageSize 300, need search recursively to get all record
 def searchRecursively(currentPageIndex, searchParams, items) :
     headers = {
         'Content-Type': 'application/json'
@@ -44,6 +45,7 @@ def getTestCasesByPath(projectID, path, repoID):
     ]
 
     if (repoID != '') :
+        # Get test object by ID (required)
         conditions.append({
             "key": "TestProject.id",
             "operator": "=",
