@@ -31,7 +31,7 @@ def filterTestCasesByRepo(projectID, path, repoID):
             }
             testCases.append(testCaseDetails)
         else:
-            print("Given path doesn't match", repoID == '', testCase.get('testProject'), testCase.get('testProject') is None)
+            print("Given path doesn't match")
             continue
 
     return testCases
